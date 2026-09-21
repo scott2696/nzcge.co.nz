@@ -306,6 +306,9 @@ code{font:500 .9em var(--mono);background:var(--haze);padding:.1em .38em;border-
 .lb-offer-add{display:block;font:750 1.02rem/1.2 var(--disp);color:var(--pounamu);margin-top:.14rem}
 .lb-offer-terms{display:block;font-size:.715rem;line-height:1.45;color:var(--mute);margin-top:.38rem}
 .lb-offer-terms a{color:var(--link);text-decoration:underline;text-underline-offset:2px}
+/* Repeated affiliate link inside the offer box. It belongs to the stacked
+   card only — the desktop row already carries its button one column over. */
+.lb-offer-cta{display:none}
 /* Row one gets the loudest treatment of all. */
 .lb-row--top .lb-offer{border-color:var(--kowhai-deep);box-shadow:0 1px 0 rgba(154,120,18,.1)}
 .lb-row--top .lb-offer-main{font-size:1.94rem}
@@ -322,17 +325,110 @@ code{font:500 .9em var(--mono);background:var(--haze);padding:.1em .38em;border-
 .lb-cta{display:flex;flex-direction:column;gap:.38rem}
 .lb-terms{font-size:.665rem;color:var(--faint);text-align:center;line-height:1.35}
 .lb-review{font-size:.78rem;text-align:center}
+/* ---------- the leaderboard on phones and tablets -----------------------
+   Below 941px the five-column row stops being a row: the offer, the score
+   and the button end up fighting over a 40-character line. Each entry
+   becomes a self-contained card instead, stacked in the order a reader
+   actually decides in — who it is, what it scores, what the offer is,
+   then the button, then the terms that qualify all three.
+
+   .lb-brand and .lb-cta go display:contents so their children become grid
+   items of the card itself. That is what lets the CTA sit between the offer
+   and the small print, and the 18+ line sit below the fine print, without
+   disturbing the source order the desktop row depends on. */
 @media(max-width:940px){
   .lb-head{display:none}
-  .lb-row{grid-template-columns:38px 1fr;grid-template-areas:"rank logo" "brand brand" "score score" "cta cta";gap:.75rem 1rem;padding:1.05rem}
-  .lb-rank{grid-area:rank;text-align:left}
-  .lb-logo{grid-area:logo;height:56px;justify-self:start;padding:.4rem .7rem;min-width:140px}
-  .lb-brand{grid-area:brand}
-  .lb-score{grid-area:score;display:flex;align-items:center;gap:.7rem;text-align:left}
-  .lb-score .lb-bar{flex:1;margin-top:0}
-  .lb-offer-main{font-size:1.72rem}
-  .lb-row--top .lb-offer-main{font-size:2rem}
-  .lb-cta{grid-area:cta}
+  /* The shell stops being a bordered table and becomes a stack of cards. */
+  .lb{border:0;background:none;box-shadow:none;overflow:visible;
+      display:flex;flex-direction:column;gap:.8rem}
+  .lb-row{
+    display:grid;grid-template-columns:auto 1fr;gap:.3rem .8rem;align-items:center;
+    grid-template-areas:
+      "rank   logo"
+      "badge  badge"
+      "name   name"
+      "sub    sub"
+      "score  score"
+      "offer  offer"
+      "cta    cta"
+      "review review"
+      "meta   meta"
+      "terms  terms";
+    padding:.9rem .9rem .95rem;border:1px solid var(--line);border-radius:14px;
+    background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+  .lb-row:nth-child(even){background:var(--card)}
+  .lb-row--top{background:linear-gradient(180deg,#FFFCF3,var(--card) 32%);
+    border-color:var(--kowhai-deep)}
+  /* The 3px rail reads as a clipped edge once the row has rounded corners. */
+  .lb-row--top::before{display:none}
+  .lb-brand,.lb-cta{display:contents}
+
+  /* Rank reads as a plate number beside the logo: 01, not 1. */
+  .lb{counter-reset:lbrank}
+  .lb-row{counter-increment:lbrank}
+  .lb-rank{grid-area:rank;text-align:left;font-size:0}
+  .lb-rank::before{content:counter(lbrank,decimal-leading-zero);
+    font:800 2rem/1 var(--disp);color:var(--ink);letter-spacing:-.045em;
+    font-variant-numeric:tabular-nums}
+  .lb-logo{grid-area:logo;height:48px;min-width:0;justify-self:stretch;padding:.28rem .8rem}
+  .lb-logo img{max-height:38px}
+
+  .lb-badge{grid-area:badge;display:block;margin:.18rem 0 0;justify-self:end}
+  .lb-badge .chip{font-size:.78rem;padding:.26rem .72rem}
+  .lb-brand .lb-name{grid-area:name;display:block;margin:.15rem 0 0;text-align:center;
+    font-size:1.3rem;line-height:1.2;letter-spacing:-.022em}
+  .lb-sub{grid-area:sub;margin:0;text-align:center;font-size:.92rem;line-height:1.35}
+
+  /* Score: the bar carries the comparison, the number confirms it. */
+  .lb-score{grid-area:score;display:grid;grid-template-columns:1fr auto;
+    grid-template-areas:"bar bar" "lbl val";align-items:center;gap:0 .6rem;
+    text-align:left;margin-top:.35rem}
+  .lb-score::before{content:"Our score";grid-area:lbl;
+    font:750 .98rem/1.2 var(--disp);color:var(--ink)}
+  .lb-score-top{grid-area:val;justify-self:end;font-size:1.3rem}
+  .lb-score-top span{font-size:.8rem}
+  .lb-bar{grid-area:bar;height:5px;border-radius:var(--r-pill);margin:0 0 .3rem}
+  .lb-bar i{background:linear-gradient(90deg,var(--pounamu-3),var(--kowhai))}
+
+  /* The offer centres and reads as one sentence, with the affiliate link
+     repeated inside it — the box is what the reader is looking at when
+     they decide, so it carries a way to act on the decision. */
+  .lb-offer{grid-area:offer;margin:.4rem 0 0;padding:.62rem .7rem .6rem;text-align:center;
+    border-left-width:1px;border-radius:10px}
+  .lb-offer-lbl{font-size:.685rem;letter-spacing:.14em;margin-bottom:.26rem}
+  .lb-offer-lbl::before{content:"\2022\00a0";color:var(--kowhai-deep)}
+  .lb-offer-main,.lb-row--top .lb-offer-main{display:inline;font-size:1.14rem;line-height:1.3}
+  .lb-offer-add,.lb-row--top .lb-offer-add{display:inline;font-size:1.14rem;font-weight:800;
+    color:var(--ink);margin:0}
+  .lb-offer-add::before{content:" "}
+  .lb-offer-terms{font-size:.72rem;margin-top:.3rem}
+  .lb-offer-cta{display:inline-block;margin-top:.35rem;
+    font:750 .95rem/1.2 var(--disp);color:var(--link);
+    text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+  .lb-offer-cta:hover{color:var(--link-hi)}
+
+  .lb-cta .btn{grid-area:cta;width:100%;margin-top:.38rem;padding:.66rem 1rem;font-size:1rem}
+  .lb-review{grid-area:review;text-align:center;font-size:.9rem;margin-top:.25rem}
+
+  /* Chips collapse into one dotted line of fine print under a rule: on a
+     card this wide they were a second, competing block of colour. */
+  .lb-meta{grid-area:meta;display:block;text-align:center;margin:.55rem 0 0;
+    padding-top:.55rem;border-top:1px solid var(--line);
+    font-size:.82rem;line-height:1.45;color:var(--mute)}
+  .lb-meta .chip{display:inline;background:none;border:0;padding:0;font-size:inherit;
+    font-weight:600;color:inherit;white-space:normal;line-height:inherit}
+  .lb-meta .chip + .chip::before{content:"\00b7";color:var(--faint);font-weight:400;
+    margin:0 .34em}
+  .lb-terms{grid-area:terms;text-align:center;font-size:.72rem;margin:.25rem 0 0}
+
+  .lb-note{border:1px solid var(--line);border-radius:12px;background:var(--haze);
+    padding:.9rem 1rem}
+}
+
+/* On a tablet the logo tile would otherwise be a 700px-wide empty box around a
+   150px logo. Cap it and centre it over the card instead. */
+@media(min-width:561px) and (max-width:940px){
+  .lb-logo{max-width:300px;justify-self:center}
 }
 
 /* ---------- chips ------------------------------------------------------ */
@@ -658,39 +754,22 @@ a.card h3{color:var(--link)}
   .lede-b{padding:1.8rem 0 2rem}
   .lede-lead{font-size:1rem}
 
-  /* ---- leaderboard row: 454px -> ~300px --------------------------------- */
-  /* Rank, logo and score share one line instead of three stacked bands. */
-  .lb-row{grid-template-columns:32px 128px 1fr;
-          grid-template-areas:"rank logo score" "brand brand brand" "cta cta cta";
-          gap:.55rem .7rem;padding:.85rem .8rem;align-items:center}
-  .lb-logo{height:48px;min-width:0;padding:.3rem .5rem}
-  .lb-logo img{max-height:38px}
-  .lb-score{grid-area:score;display:block;text-align:right}
-  .lb-score .lb-bar{margin-top:.3rem}
-  .lb-score-top{font-size:1.25rem}
-  .lb-brand .lb-name{font-size:.98rem;margin-bottom:.15rem}
-  .lb-sub{font-size:.79rem;margin-bottom:.3rem}
-  /* The offer stays big on the phone — it is the reason the row exists. The
-     height is paid for out of the chips and the supporting line, not out of
-     the number itself. */
-  .lb-offer{margin:.05rem 0 .4rem;padding:.44rem .6rem .48rem .62rem}
-  .lb-offer-lbl{font-size:.565rem;margin-bottom:.2rem}
-  .lb-offer-main{font-size:1.5rem;line-height:1.02}
-  .lb-row--top .lb-offer-main{font-size:1.72rem}
-  .lb-offer-add{font-size:.92rem;margin-top:.1rem}
-  .lb-row--top .lb-offer-add{font-size:.96rem}
-  .lb-offer-terms{font-size:.685rem;margin-top:.28rem}
-  .lb-meta{margin-top:.35rem;gap:.25rem}
+  /* ---- the card, one notch down ---------------------------------------
+     The card at 940px is already sized for a phone, so this is a nudge, not
+     a second layout: type and padding only, nothing dropped. */
+  .lb{gap:.7rem}
+  .lb-row{padding:.85rem .8rem .9rem}
+  .lb-rank::before{font-size:1.9rem}
+  .lb-logo{height:48px;padding:.28rem .7rem}
+  .lb-logo img{max-height:36px}
+  .lb-brand .lb-name{font-size:1.24rem}
+  .lb-sub{font-size:.88rem}
+  .lb-score-top{font-size:1.24rem}
+  .lb-offer{padding:.64rem .65rem .62rem}
+  .lb-offer-main,.lb-row--top .lb-offer-main,
+  .lb-offer-add,.lb-row--top .lb-offer-add{font-size:1.08rem}
+  .lb-meta{font-size:.8rem}
   .chip{font-size:.66rem;padding:.18rem .45rem}
-  /* Badge sits beside the name instead of on its own line (-28px/row). */
-  .lb-badge{display:inline;margin:0 0 0 .35rem}
-  .lb-brand .lb-name{display:inline}
-  .lb-brand .lb-badge + .lb-offer{margin-top:.34rem}
-  .lb-row{padding:.75rem .8rem}
-  .lb-cta{flex-direction:row;align-items:center;gap:.6rem;flex-wrap:wrap}
-  .lb-cta .btn{flex:1 1 55%}
-  .lb-review{flex:0 0 auto;text-align:right}
-  .lb-terms{flex:1 1 100%;text-align:left;font-size:.62rem}
 }
 
 /* The narrowest common phones need a little more reclaimed for the first CTA
@@ -705,19 +784,26 @@ a.card h3{color:var(--link)}
   .lede-e .byline{padding-top:.62rem}
   .lede-c{padding:.5rem 0 1.4rem}
   .lede-h2{font-size:1.18rem;line-height:1.22}
-  .lb-row{padding:.5rem .7rem;gap:.35rem .6rem}
-  .lb-logo{height:44px}
+  .lb-row{padding:.75rem .7rem .8rem;gap:.26rem .6rem}
+  .lb-rank::before{font-size:1.78rem}
+  .lb-logo{height:46px;padding:.25rem .6rem}
   .lb-logo img{max-height:34px}
-  .lb-cta .btn{padding:.5rem .8rem}
-  .lb-sub{font-size:.76rem;line-height:1.38;margin-bottom:.12rem}
-  .lb-offer{padding:.4rem .55rem .44rem .58rem;margin:.25rem 0 .25rem}
-  .lb-offer-main{font-size:1.4rem}
-  .lb-row--top .lb-offer-main{font-size:1.6rem}
-  .lb-offer-add{font-size:.88rem}
-  .lb-offer-terms{font-size:.665rem}
-  .lb-meta{margin-top:.28rem;gap:.22rem}
+  .lb-badge .chip{font-size:.74rem;padding:.24rem .62rem}
+  .lb-brand .lb-name{font-size:1.18rem}
+  .lb-sub{font-size:.84rem;line-height:1.32}
+  .lb-score::before{font-size:.92rem}
+  .lb-score-top{font-size:1.2rem}
+  .lb-offer{padding:.58rem .55rem .56rem;margin-top:.35rem}
+  .lb-offer-lbl{font-size:.655rem}
+  .lb-offer-main,.lb-row--top .lb-offer-main,
+  .lb-offer-add,.lb-row--top .lb-offer-add{font-size:1.02rem}
+  .lb-offer-terms{font-size:.69rem}
+  .lb-offer-cta{font-size:.9rem}
+  .lb-cta .btn{padding:.62rem .9rem;font-size:.96rem}
+  .lb-review{font-size:.86rem}
+  .lb-meta{font-size:.77rem;margin-top:.45rem;padding-top:.45rem}
+  .lb-terms{font-size:.69rem}
   .chip{font-size:.63rem;padding:.15rem .4rem}
-  .lb-terms{margin-top:.15rem}
   .topstrip{font-size:.63rem}
   .topstrip .wrap{padding-top:.3rem;padding-bottom:.3rem}
 }

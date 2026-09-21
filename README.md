@@ -125,7 +125,7 @@ Output is written in place. This directory **is** the deployed site.
 
 | File | Controls |
 |---|---|
-| `_build/lib.py` | **Domain, brand, email, month stamp.** `lede()` builds the hero + toplist as one flex column so the H1, byline, toplist H2, table and first CTA all clear the mobile fold. Authors, nav, the full-site hamburger menu (`menu_groups()`), footer, all page titles and descriptions, schema builders, and every shared component (leaderboard, tables, FAQ, cards, pros/cons, steps, timeline) |
+| `_build/lib.py` | **Domain, brand, email, month stamp.** `lede()` builds the hero + toplist as one flex column so the H1, byline, toplist H2, table and the first welcome offer (with its `Claim this offer` link) all clear the mobile fold - see docs/SEO-PLAYBOOK.md for the measured positions. Authors, nav, the full-site hamburger menu (`menu_groups()`), footer, all page titles and descriptions, schema builders, and every shared component (leaderboard, tables, FAQ, cards, pros/cons, steps, timeline) |
 | `_build/operators.json` | The 19 operators — links, bonuses, wagering, payout windows, licensing, payments, and `order` (the supplied commercial order, which drives every leaderboard). **Facts only.** |
 | `_build/voice.py` | This site's own copy for each operator — tagline, pros, cons, verdict and the long-form review. Merged over the facts at load. Keeps the writing original to this masthead while a corrected fact propagates everywhere at once. |
 | `_build/lawdata.py` | The licensing timeline, legal facts, helplines and bank-block data. Single source of truth for every dated claim; the tracker computes "days remaining" at build time so a stale page is visibly stale. |
