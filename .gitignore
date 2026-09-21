@@ -1,0 +1,7 @@
+# Kept out of a public repo deliberately.
+# docs/   — SEO playbook, keyword strategy, competitor and money-page research
+# _build/ — the page generator, research scripts and source artwork
+docs/
+_build/
+
+.DS_Store

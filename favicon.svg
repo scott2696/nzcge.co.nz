@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+<circle cx="24" cy="24" r="24" fill="#093028"/>
+<circle cx="24" cy="24" r="21.8" fill="none" stroke="#E8960C" stroke-width="4.4"
+ stroke-dasharray="4.19 12.93" stroke-dashoffset="2.1"/>
+<circle cx="24" cy="24" r="19.6" fill="#C57B09"/>
+<circle cx="24" cy="24" r="18.1" fill="#16594A"/>
+<radialGradient id="g" cx="50%" cy="34%" r="62%">
+<stop offset="0" stop-color="#2A8F76"/><stop offset="1" stop-color="#16594A"/>
+</radialGradient>
+<circle cx="24" cy="24" r="18.1" fill="url(#g)"/>
+<text x="24" y="30.5" font-family="Arial,Helvetica,sans-serif" font-size="16.5"
+ font-weight="700" fill="#fff" text-anchor="middle">NZ</text>
+</svg>
